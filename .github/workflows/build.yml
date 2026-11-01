@@ -1,0 +1,39 @@
+name: Build DeformX IPA
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+    - name: 1. 检出代码
+      uses: actions/checkout@v4
+
+    - name: 2. 编译并打包
+      run: |
+        xcodebuild archive \
+          -project DeformX.xcodeproj \
+          -scheme DeformX \
+          -configuration Release \
+          -destination 'generic/platform=iOS' \
+          -archivePath $RUNNER_TEMP/DeformX.xcarchive \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGN_IDENTITY=""
+
+    - name: 3. 打包成 IPA
+      run: |
+        mkdir -p $RUNNER_TEMP/Payload
+        cp -r $RUNNER_TEMP/DeformX.xcarchive/Products/Applications/DeformX.app $RUNNER_TEMP/Payload/
+        cd $RUNNER_TEMP
+        zip -r DeformX.ipa Payload
+
+    - name: 4. 上传 IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: DeformX-Unsigned-IPA
+        path: $RUNNER_TEMP/DeformX.ipa
