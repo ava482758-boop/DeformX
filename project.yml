@@ -1,0 +1,28 @@
+name: DeformX
+options:
+  bundleIdPrefix: com.DeformX
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+
+targets:
+  DeformX:
+    type: application
+    platform: iOS
+    sources:
+      - path: PhysicsCore
+      - path: Bridge
+      - path: App
+      - path: AppMain.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.yourname.deformx
+        INFOPLIST_FILE: Info.plist
+        # 关键：告诉 Xcode 去哪里找 C++ 头文件
+        HEADER_SEARCH_PATHS: 
+          - "$(SRCROOT)/PhysicsCore"
+        CLANG_CXX_LANGUAGE_STANDARD: "c++17"
+        # 取消签名，必须设置
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGN_IDENTITY: ""
